@@ -1,66 +1,80 @@
+const playerText = document.querySelector('#playerText');
+const computerText = document.querySelector('#computerText');
+const resultText = document.querySelector('#resultText');
+const choiceBtns = document.querySelectorAll('.choiceBtn');
+const roundNumberText = document.querySelector('#roundNumberText');
+const finalResultText = document.querySelector('#finalResultText');
+const resetBtn = document.querySelector('#resetBtn');
+let player;
+let computer;
+let result;
+let roundNumber = 0;
+let computerWins = 0;
+let playerWins = 0;
 
-function getRandomChoice() {
-    const choices = ['rock', 'paper', 'scissor'];
-    const randomIndex = Math.floor(Math.random() * choices.length);
-    return choices[randomIndex];
-  }
-  
+choiceBtns.forEach(button => button.addEventListener('click', () => {
+    if (roundNumber < 5) {
+        roundNumber++;
+        player = button.textContent;
+        computerChoice();
+        playerText.textContent = `player ${player}`;
+        computerText.textContent = `computer ${computer}`;
+        resultText.textContent = checkWinner();
+        roundNumberText.textContent = `rounds played ${roundNumber}`;
 
-  function Winner(playerChoice, computerChoice) {
-    if (playerChoice === computerChoice) {
-      return 'It\'s a tie!';
-    } else if (
-      (playerChoice === 'rock' && computerChoice === 'scissor') ||
-      (playerChoice === 'paper' && computerChoice === 'rock') ||
-      (playerChoice === 'scissor' && computerChoice === 'paper')
-    ) {
-      return 'You win!';
+        if (checkWinner() == "COMPUTER WINS") {
+            computerWins += 1;
+        } else if (checkWinner() == "PLAYER WINS") {
+            playerWins += 1;
+        }
+
+        if (roundNumber === 5) {
+            announceFinalResult();
+        }
+    }
+}));
+resetBtn.addEventListener("click", () => {
+  roundNumber = 0;
+  computerWins = 0;
+  playerWins = 0;
+  finalResultText.textContent = '';
+  roundNumberText.textContent = '';
+});
+
+
+function computerChoice() {
+    const randNumber = Math.floor(Math.random() * 3) + 1;
+
+    switch (randNumber) {
+        case 1:
+            computer = "ROCK";
+            break;
+        case 2:
+            computer = "PAPER";
+            break;
+        case 3:
+            computer = "SCISSORS";
+            break;
+    }
+}
+
+function checkWinner() {
+    if (computer == player) {
+        return "IT IS A TIE";
+    } else if (computer == "PAPER" && player == "ROCK" || computer == "SCISSORS" && player == "PAPER" || computer == "ROCK" && player == "SCISSORS") {
+        return "COMPUTER WINS";
     } else {
-      return 'Computer wins!';
+        return "PLAYER WINS";
     }
-  }
-  
+}
 
-  function updateResults(result, rounds, playerScore, computerScore) {
-    document.getElementById('results').innerText = result;
-    document.getElementById('roundsplayed').innerText = `Rounds played: ${rounds}`;
-    document.getElementById('playerwins').innerText = `Player wins: ${playerScore}`;
-    document.getElementById('computerwins').innerText = `Computer wins: ${computerScore}`;
-  }
-  
-
-  function playRound(playerChoice) {
-    const computerChoice = getRandomChoice();
-    const result = Winner(playerChoice, computerChoice);
-  
-    if (result === 'You win!') {
-      playerWins++;
-    } else if (result === 'Computer wins!') {
-      computerWins++;
+function announceFinalResult() {
+    finalResultText.textContent = `Final Score: ${computerWins} (Computer), ${playerWins} (Player)`;
+    if (computerWins > playerWins) {
+        finalResultText.textContent += " - Computer Wins!";
+    } else if (computerWins < playerWins) {
+        finalResultText.textContent += " - Player Wins!";
+    } else {
+        finalResultText.textContent += " - It's a Tie!";
     }
-  
-    roundsPlayed++;
-  
-    
-    updateResults(result, roundsPlayed, playerWins, computerWins);
-  }
-  
-  document.getElementById('rock').addEventListener('click', function () {
-    playRound('rock');
-  });
-  
-  document.getElementById('paper').addEventListener('click', function () {
-    playRound('paper');
-  });
-  
-  document.getElementById('scissor').addEventListener('click', function () {
-    playRound('scissor');
-  });
-  
-
-  let roundsPlayed = 0;
-  let playerWins = 0;
-  let computerWins = 0;
-  
-    
-  
+}
